@@ -2,9 +2,10 @@
 
 import { setupCounter } from './counter.ts'
 import 'uno.css'
+import './style.css'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = /* html */`
-  <div>
+  <div class="bg-zinc-4/80">
     <h1>Vite + TypeScript</h1>
     <div class="card">
       <button id="counter" type="button"></button>

@@ -10,14 +10,34 @@ use tao::{
 };
 use wry::WebViewBuilder;
 
+use napi::Result;
+
 #[napi]
-pub fn create_webview() {
+pub fn create_webview() -> Result<()> {
   let event_loop = EventLoop::new();
-  let window = WindowBuilder::new().build(&event_loop).unwrap();
+  #[allow(unused_mut)]
+  let mut builder = WindowBuilder::new()
+    .with_decorations(false)
+    .with_always_on_top(true)
+    .with_transparent(true);
+
+    #[cfg(target_os = "windows")]
+    {
+      use tao::platform::windows::WindowBuilderExtWindows;
+      builder = builder.with_undecorated_shadow(false);
+    }
+    let window = builder.build(&event_loop).unwrap();
+    
+    #[cfg(target_os = "windows")]
+    {
+      use tao::platform::windows::WindowExtWindows;
+      window.set_undecorated_shadow(true);
+    }
 
   let html_content = include_str!("./ui/index.html");
 
   let builder = WebViewBuilder::new()
+    .with_transparent(true)
     .with_html(html_content);
 
   #[cfg(any(
@@ -26,7 +46,7 @@ pub fn create_webview() {
     target_os = "ios",
     target_os = "android"
   ))]
-  let _webview = builder.build(&window);
+  let _webview = builder.build(&window).unwrap();
   #[cfg(not(any(
     target_os = "windows",
     target_os = "macos",
