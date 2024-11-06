@@ -1,6 +1,92 @@
-<html lang="en">
+<html>
+  <head>
+    <style>
+      html {
+        font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      *[data-wry-darg-region] {
+        app-region: drag; /* Supported on Windows only, on WebView2 123+ and makes dragging with touch work */
+      }
+
+      main {
+        display: grid;
+        place-items: center;
+        height: calc(100vh - 30px);
+      }
+
+      .titlebar {
+        height: 32px;
+        padding-left: 5px;
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 1fr max-content max-content max-content;
+        align-items: center;
+        background: #1f1f1f;
+        color: white;
+        user-select: none;
+      }
+
+      .titlebar-button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+      }
+
+      .titlebar-button:hover {
+        background: #3b3b3b;
+      }
+
+      .titlebar-button#close:hover {
+        background: #da3d3d;
+      }
+
+      .titlebar-button img {
+        filter: invert(100%);
+      }
+    </style>
+  </head>
+
   <body>
-    <div id="app"></div>
-    <script type="module" src="./src/main.ts"></script>
+    <div class="titlebar">
+      <div data-wry-darg-region>Custom Titlebar</div>
+      <div>
+        <div class="titlebar-button" onclick="window.ipc.postMessage('minimize')">
+          <img src="https://api.iconify.design/codicon:chrome-minimize.svg" />
+        </div>
+        <div class="titlebar-button" onclick="window.ipc.postMessage('maximize')">
+          <img src="https://api.iconify.design/codicon:chrome-maximize.svg" />
+        </div>
+        <div class="titlebar-button" id="close" onclick="window.ipc.postMessage('close')">
+          <img src="https://api.iconify.design/codicon:close.svg" />
+        </div>
+      </div>
+    </div>
+    <main>
+      <h4>WRYYYYYYYYYYYYYYYYYYYYYY!</h4>
+    </main>
+    <script>
+      document.addEventListener('mousemove', (e) => window.ipc.postMessage(`mousemove:${e.clientX},${e.clientY}`))
+      document.addEventListener('mousedown', (e) => {
+        if (e.target.hasAttribute('data-wry-darg-region') && e.button === 0) {
+          e.detail === 2 ? window.ipc.postMessage('maximize') : window.ipc.postMessage('drag_window')
+        } else {
+          window.ipc.postMessage(`mousedown:${e.clientX},${e.clientY}`)
+        }
+      })
+      document.addEventListener('touchstart', (e) => {
+        if (e.target.hasAttribute('data-wry-darg-region')) {
+          window.ipc.postMessage('drag_window')
+        }
+      })
+    </script>
   </body>
 </html>
