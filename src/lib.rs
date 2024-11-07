@@ -6,12 +6,11 @@ mod hit_test;
 #[macro_use]
 extern crate napi_derive;
 
-use tao::{
-  event::{Event, StartCause, WindowEvent},
-  event_loop::{ControlFlow, EventLoopBuilder},
-  window::WindowBuilder,
+use tao::{ event::{Event, StartCause, WindowEvent}, event_loop::{ControlFlow, EventLoopBuilder}, window::WindowBuilder};
+use wry::{
+  http::Request, Rect, WebViewBuilder, WebViewBuilderExtWindows,
+  dpi::{LogicalPosition, LogicalSize},
 };
-use wry::{http::Request, WebViewBuilder, WebViewBuilderExtWindows};
 use window_vibrancy::*;
 
 use user_event::UserEvent;
@@ -79,12 +78,27 @@ pub fn create_webview() -> Result<()> {
     }
   };
 
-  let builder = WebViewBuilder::new()
+  let size = window.inner_size().to_logical::<u32>(window.scale_factor());
+
+
+  let menu_builder = WebViewBuilder::new()
+    .with_bounds(Rect {
+      position: LogicalPosition::new(0, 0).into(),
+      size: LogicalSize::new(size.width, 60).into(),
+    })
     .with_transparent(true)
     .with_ipc_handler(handler)
     .with_accept_first_mouse(true)
     .with_theme(wry::Theme::Dark)
     .with_html(html_content);
+
+  let mp_builder = WebViewBuilder::new()
+    .with_url("https://www.baidu.com")
+    .with_bounds(Rect {
+      position: LogicalPosition::new(0, 60).into(),
+      size: LogicalSize::new(size.width, 500).into(),
+    })
+    .build_as_child(&window).unwrap();
 
   #[cfg(any(
     target_os = "windows",
@@ -92,14 +106,14 @@ pub fn create_webview() -> Result<()> {
     target_os = "ios",
     target_os = "android"
   ))]
-  let webview = builder.build(&window).unwrap();
+  let menu_webview = menu_builder.build(&window).unwrap();
   #[cfg(not(any(
     target_os = "windows",
     target_os = "macos",
     target_os = "ios",
     target_os = "android"
   )))]
-  let webview = {
+  let menu_webview = {
     use tao::platform::unix::WindowExtUnix;
     use wry::WebViewBuilderExtUnix;
     let vbox = window.default_vbox().unwrap();
@@ -110,10 +124,10 @@ pub fn create_webview() -> Result<()> {
   apply_mica(&window, None)
     .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
-  let mut webview = Some(webview);
+  let mut menu_webview = Some(menu_webview);
 
   #[cfg(target_os = "macos")]
-  let _ = apply_vibrancy(webview.window(), NSVisualEffectMaterial::HudWindow, None, None)
+  let _ = apply_vibrancy(menu_webview.window(), NSVisualEffectMaterial::HudWindow, None, None)
     .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
 
@@ -127,7 +141,7 @@ pub fn create_webview() -> Result<()> {
         ..
       }
       | Event::UserEvent(UserEvent::CloseWindow) => {
-        let _ = webview.take();
+        let _ = menu_webview.take();
         *control_flow = ControlFlow::Exit
       }
 
