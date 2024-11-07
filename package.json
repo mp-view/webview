@@ -31,7 +31,7 @@
     "dev:ui": "vite build -c ./ui/vite.config.mts --watch",
     "prepublishOnly": "napi prepublish -t npm",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint . --fix && cargo fmt",
     "universal": "napi universal",
     "version": "napi version"
   },

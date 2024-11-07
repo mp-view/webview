@@ -4,6 +4,5 @@ pub enum UserEvent {
   Maximize,
   DragWindow,
   CloseWindow,
-  MouseDown(i32, i32),
-  MouseMove(i32, i32),
+  Devtools,
 }
