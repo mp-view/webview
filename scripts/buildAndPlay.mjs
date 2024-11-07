@@ -9,18 +9,20 @@ function buildAndPlay() {
     shell: true,
   })
 
-  buildProcess.on('close', () => {
-    playProcess = spawn('yarn', ['play'], {
-      stdio: 'inherit',
-      shell: true,
-    })
+  buildProcess.on('close', (code) => {
+    if (code === 0) {
+      playProcess = spawn('yarn', ['play'], {
+        stdio: 'inherit',
+        shell: true,
+      })
+    }
   })
 }
 
 function killProcess(callback) {
   const platform = os.platform()
   const pid = playProcess.pid
-  const command = platform === 'win32' ? `taskkill /PID ${pid} /T /F` : `kill -9 ${pid}`
+  const command = platform === 'win32' ? `taskkill /PID ${pid} /T /F` : `pkill -P ${pid}`
 
   exec(command, (err) => {
     if (err) {
@@ -28,7 +30,6 @@ function killProcess(callback) {
       throw new Error('Failed to kill process')
     }
     else {
-      // eslint-disable-next-line no-console
       console.log(`Killed process ${pid}`)
       playProcess = null
       callback()

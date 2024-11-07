@@ -35,5 +35,10 @@
     "scss",
     "pcss",
     "postcss"
+  ],
+  "cSpell.words": [
+    "aarch",
+    "msvc",
+    "riscv"
   ]
 }

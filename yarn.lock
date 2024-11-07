@@ -681,7 +681,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/types@npm:^2.0.0":
+"@iconify-json/carbon@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "@iconify-json/carbon@npm:1.2.4"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/4f68fc66015402a6903df9c636fd4af0d3b0763ebaf79574a36f3ba943322f7dc3f8d92b952dff19de18552fe3dbb18652ce978553435324a60ebc2db76cbe67
+  languageName: node
+  linkType: hard
+
+"@iconify-json/material-symbols@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@iconify-json/material-symbols@npm:1.2.6"
+  dependencies:
+    "@iconify/types": "npm:*"
+  checksum: 10c0/31bd97e71084914ec7cd8199084d2ef38c81b9dec96af652796e46777eaa9bcce0756b0178e99c53bca18c1a5482a064ecd204348b982193190325b3b3a1232a
+  languageName: node
+  linkType: hard
+
+"@iconify/types@npm:*, @iconify/types@npm:^2.0.0":
   version: 2.0.0
   resolution: "@iconify/types@npm:2.0.0"
   checksum: 10c0/65a3be43500c7ccacf360e136d00e1717f050b7b91da644e94370256ac66f582d59212bdb30d00788aab4fc078262e91c95b805d1808d654b72f6d2072a7e4b2
@@ -764,6 +782,8 @@ __metadata:
   resolution: "@mp-view/webview@workspace:."
   dependencies:
     "@antfu/eslint-config": "npm:^3.8.0"
+    "@iconify-json/carbon": "npm:^1.2.4"
+    "@iconify-json/material-symbols": "npm:^1.2.6"
     "@napi-rs/cli": "npm:^2.18.4"
     "@types/node": "npm:^22.9.0"
     "@unocss/eslint-plugin": "npm:^0.62.4"

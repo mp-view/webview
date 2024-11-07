@@ -24,7 +24,7 @@
     "artifacts": "napi artifacts",
     "dev": "npm-run-all -p dev:ui dev:rs",
     "dev:rs": "nodemon",
-    "build": "yarn build:ui && napi build --platform --release",
+    "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "play": "node ./playground/index.mjs",
     "build:ui": "vite build -c ./ui/vite.config.mts",
@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.8.0",
+    "@iconify-json/carbon": "^1.2.4",
+    "@iconify-json/material-symbols": "^1.2.6",
     "@napi-rs/cli": "^2.18.4",
     "@types/node": "^22.9.0",
     "@unocss/eslint-plugin": "^0.62.4",
