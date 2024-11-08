@@ -11,7 +11,6 @@ use tao::{
   window::WindowBuilder,
 };
 use user_event::UserEvent;
-use window_vibrancy::{apply_mica, apply_vibrancy, NSVisualEffectMaterial};
 use wry::{
   dpi::{LogicalPosition, LogicalSize},
   http::Request,
@@ -23,8 +22,18 @@ use tao::platform::windows::{WindowBuilderExtWindows, WindowExtWindows};
 
 use napi::Result;
 
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Device {
+    id: u32,
+    name: String,
+    size: [u32; 2],
+    user_agent: String,
+}
+
 #[napi]
-pub fn create_webview() -> Result<()> {
+pub fn create_webview(url: String) -> Result<()> {
   let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
 
   #[allow(unused_mut)]
@@ -40,18 +49,18 @@ pub fn create_webview() -> Result<()> {
 
   let window = builder.build(&event_loop).unwrap();
 
-  #[cfg(target_os = "windows")]
-  apply_mica(&window, None)
+  #[cfg(target_os = "windows")] {
+    use window_vibrancy::apply_tabbed;
+    apply_tabbed(&window, None)
     .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+    window.set_undecorated_shadow(true);
+  }
 
-  #[cfg(target_os = "macos")]
-  apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+  #[cfg(target_os = "macos")] {
+    use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+    apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
     .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
-
-  #[cfg(target_os = "windows")]
-  window.set_undecorated_shadow(true);
-
-  let html_content = include_str!("ui/index.html");
+  }
 
   let proxy = event_loop.create_proxy();
   let handler = move |req: Request<String>| {
@@ -112,21 +121,28 @@ pub fn create_webview() -> Result<()> {
     Ok(webview)
   };
 
+  const MENU_HEIGHT: u32 = 65;
+  const HTML_CONTENT: &str = include_str!("ui/index.html");
+  const PHONE_DATA: &str = include_str!("assets/phone.data.json");
+  
+  let phone_device: Vec<Device> = serde_json::from_str(PHONE_DATA).unwrap();
+
   let menu_builder = WebViewBuilder::new()
-    .with_bounds(Rect {
-      position: LogicalPosition::new(0, 0).into(),
-      size: LogicalSize::new(size.width, 60).into(),
-    })
     .with_transparent(true)
     .with_ipc_handler(handler)
     .with_accept_first_mouse(true)
-    .with_html(html_content);
+    .with_html(HTML_CONTENT)
+    .with_bounds(Rect {
+      position: LogicalPosition::new(0, 0).into(),
+      size: LogicalSize::new(size.width, MENU_HEIGHT).into(),
+    });
 
   let mp_builder = WebViewBuilder::new()
     .with_transparent(true)
-    .with_url("https://www.baidu.com")
+    .with_accept_first_mouse(true)
+    .with_url(url)
     .with_bounds(Rect {
-      position: LogicalPosition::new(0, 60).into(),
+      position: LogicalPosition::new(0, MENU_HEIGHT).into(),
       size: LogicalSize::new(size.width, 500).into(),
     });
 
@@ -156,10 +172,13 @@ pub fn create_webview() -> Result<()> {
         UserEvent::CloseWindow => { /* handled above */ }
         UserEvent::Pin => {
           let is_pin = window.is_always_on_top();
+          println!("is_pin: {}", is_pin);
           window.set_always_on_top(!is_pin);
         }
         UserEvent::Devtools => {
           let is_devtools = mp_webview.is_devtools_open();
+
+          println!("is_devtools: {}", is_devtools);
           if is_devtools {
             mp_webview.close_devtools();
           } else {

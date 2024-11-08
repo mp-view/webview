@@ -6,7 +6,7 @@ export default defineConfig({
   ],
   shortcuts: [
     ['title-btn', 'w-12px h-12px rounded-full relative overflow-hidden cursor-pointer'],
-    ['icon-btn', 'text-16px p1 c-gray/80 rounded-full hover:bg-gray-500 hover:c-#fff transition-all duration-300'],
+    ['icon-btn', 'text-16px p1 c-gray/80 rounded-full hover:bg-gray-500 hover:c-#fff transition-all duration-300 z-10'],
   ],
   presets: [
     presetUno(),

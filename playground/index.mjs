@@ -1,3 +1,3 @@
-import { createWebview } from "../index.js";
+import { createWebview } from '../index.js'
 
-createWebview("http://tauri.app")
+createWebview('http://tauri.app')

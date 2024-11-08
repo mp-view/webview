@@ -1,10 +1,22 @@
 import { resolve } from 'node:path'
+import preact from '@preact/preset-vite'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import { run } from './../scripts/buildAndPlay.mjs'
 
 export default defineConfig({
+  plugins: [
+    UnoCSS(),
+    preact(),
+    viteSingleFile(),
+    {
+      name: 'rs-build-plugin',
+      writeBundle() {
+        run()
+      },
+    },
+  ],
   build: {
     outDir: 'src',
     emptyOutDir: false,
@@ -14,14 +26,4 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    UnoCSS(),
-    viteSingleFile(),
-    {
-      name: 'rs-build-plugin',
-      writeBundle() {
-        run()
-      },
-    },
-  ],
 })
