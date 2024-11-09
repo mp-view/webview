@@ -8,7 +8,7 @@ extern crate napi_derive;
 use tao::{
   event::{Event, StartCause, WindowEvent},
   event_loop::{ControlFlow, EventLoopBuilder},
-  window::WindowBuilder,
+  window::{Theme, WindowBuilder},
 };
 use user_event::UserEvent;
 use wry::{
@@ -39,6 +39,7 @@ pub fn create_webview(url: String) -> Result<()> {
   #[allow(unused_mut)]
   let mut builder = WindowBuilder::new()
     .with_decorations(false)
+    .with_theme(Some(Theme::Dark))
     .with_always_on_top(true)
     .with_transparent(true);
 
