@@ -8,6 +8,7 @@
     "play": "node ./../playground/index.mjs"
   },
   "devDependencies": {
+    "@floating-ui/react": "^0.26.27",
     "@iconify-json/carbon": "^1.2.4",
     "@iconify-json/lucide": "^1.2.12",
     "@iconify-json/material-symbols": "^1.2.6",

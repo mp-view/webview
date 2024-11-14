@@ -23,7 +23,7 @@ export default defineConfig({
     },
   ],
   build: {
-    outDir: 'src',
+    outDir: './../src/ui',
     emptyOutDir: false,
     rollupOptions: {
       input: {

@@ -7,11 +7,11 @@
   "cpu": [
     "x64"
   ],
+  "license": "MIT",
   "main": "webview.win32-x64-msvc.node",
   "files": [
     "webview.win32-x64-msvc.node"
   ],
-  "license": "MIT",
   "engines": {
     "node": ">= 10"
   }
