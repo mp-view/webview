@@ -135,7 +135,7 @@ pub fn create_webview(url: String) -> Result<()> {
     .with_html(HTML_CONTENT)
     .with_bounds(Rect {
       position: LogicalPosition::new(0, 0).into(),
-      size: LogicalSize::new(size.width, MENU_HEIGHT).into(),
+      size: LogicalSize::new(size.width, MENU_HEIGHT +500).into(),
     });
 
   let mp_builder = WebViewBuilder::new()
@@ -147,8 +147,8 @@ pub fn create_webview(url: String) -> Result<()> {
       size: LogicalSize::new(size.width, 500).into(),
     });
 
-  let menu_webview = build_webview(menu_builder).unwrap();
-  let mp_webview = build_webview(mp_builder).unwrap();
+    let mp_webview = build_webview(mp_builder).unwrap();
+    let menu_webview = build_webview(menu_builder).unwrap();
 
   let mut menu_webview = Some(menu_webview);
 

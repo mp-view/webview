@@ -1,63 +1,39 @@
 import type { PhoneInfoData } from './../constants/phoneInfo'
-import {
-  useClick,
-  useDismiss,
-  useFloating,
-  useInteractions,
-} from '@floating-ui/react'
-import { useState } from 'preact/hooks'
-
 import { phoneInfoData } from './../constants/phoneInfo'
+import Popover from './ui/popover'
 
 export function DeviceInfo({ info }: { info: PhoneInfoData }) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const { refs, floatingStyles, context } = useFloating({
-    open: isOpen,
-    onOpenChange: setIsOpen,
-    placement: 'bottom',
-  })
-  const click = useClick(context)
-  const dismiss = useDismiss(context)
-
-  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss])
+  const content = (
+    <div class="flex flex-col gap-y-4">
+      {phoneInfoData.map(item => (
+        <div key={item.name}>
+          <div class="flex items-center gap-x-2">
+            <div class="i-lucide-info-circle-fill text-14px text-gray/60"></div>
+            <div class="text-14px">{item.name}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div class="cursor-default ml8!">
-      <div
-        class="group flex cursor-pointer items-center c-#fff"
-        ref={refs.setReference}
-        {...getReferenceProps()}
+      <Popover
+        content={content}
+        trigger="click"
       >
-        <div>
-          {info.name}
+        <div class="group flex cursor-pointer items-center c-#fff">
+          <div>
+            {info.name}
+          </div>
+          <div class="i-lucide-chevrons-up-down ml2 opacity-50"></div>
         </div>
-        <div class="i-lucide-chevrons-up-down ml2 opacity-50"></div>
-      </div>
+      </Popover>
       <div class="text-14px c-gray/80">
         {info.size[0]}
         x
         {info.size[1]}
       </div>
-
-      {
-        isOpen && (
-          <div
-            ref={refs.setFloating}
-            style={floatingStyles}
-            {...getFloatingProps()}
-          >
-            {phoneInfoData.map(item => (
-              <div class="rounded-md bg-white p4 shadow-md">
-                <div class="flex items-center">
-                  <div class="i-lucide-phone-call mr4"></div>
-                  <div>{item.name}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      }
     </div>
   )
 }
