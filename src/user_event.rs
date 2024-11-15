@@ -6,4 +6,5 @@ pub enum UserEvent {
   CloseWindow,
   Devtools,
   MenuMaximize,
+  Deviceinfo(String),
 }

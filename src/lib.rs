@@ -6,9 +6,7 @@ mod user_event;
 extern crate napi_derive;
 
 use tao::{
-  event::{Event, StartCause, WindowEvent},
-  event_loop::{ControlFlow, EventLoopBuilder},
-  window::{Theme, WindowBuilder},
+  dpi::{PhysicalSize, Size}, event::{Event, StartCause, WindowEvent}, event_loop::{ControlFlow, EventLoopBuilder}, window::{Theme, WindowBuilder}
 };
 use user_event::UserEvent;
 use wry::{
@@ -26,7 +24,6 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct Device {
-    id: u32,
     name: String,
     size: [u32; 2],
     user_agent: String,
@@ -66,7 +63,7 @@ pub fn create_webview(url: String) -> Result<()> {
   let proxy = event_loop.create_proxy();
   let handler = move |req: Request<String>| {
     let body = req.body();
-    let mut req = body.split([':', ',']);
+    let mut req = body.split(['-']);
     match req.next().unwrap() {
       "minimize" => {
         let _ = proxy.send_event(UserEvent::Minimize);
@@ -88,6 +85,11 @@ pub fn create_webview(url: String) -> Result<()> {
       }
       "menu_maximize" => {
         let _ = proxy.send_event(UserEvent::MenuMaximize);
+      }
+      "device_info" => {
+        let info_json = req.next().unwrap().parse().unwrap();
+        println!("device: {:?}", info_json);
+        let _ = proxy.send_event(UserEvent::Deviceinfo(info_json));
       }
       _ => {}
     }
@@ -204,6 +206,11 @@ pub fn create_webview(url: String) -> Result<()> {
             position: LogicalPosition::new(0, 0).into(),
             size: LogicalSize::new(size.width, height).into(),
           }).unwrap();
+        }
+        UserEvent::Deviceinfo(device_json) => {
+          let device: Device = serde_json::from_str(&device_json).unwrap();
+          window.set_inner_size(LogicalSize::new(device.size[0], device.size[1]));
+          println!("device_json: {:?}", device.size);
         }
       },
       _ => (),

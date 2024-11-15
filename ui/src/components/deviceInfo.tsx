@@ -8,7 +8,7 @@ export function DeviceInfo({ info }: { info: PhoneInfoData }) {
     <div class="flex flex-col gap-y-4">
       {phoneInfoData.map(item => (
         <div key={item.name}>
-          <div class="flex items-center gap-x-2">
+          <div class="flex items-center gap-x-2" onClick={() => window.ipc.postMessage(`${USER_EVENT.DEVICE_INFO}-${JSON.stringify(item)}`)}>
             <div class="i-lucide-info-circle-fill text-14px text-gray/60"></div>
             <div class="text-14px">{item.name}</div>
           </div>
