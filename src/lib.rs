@@ -86,6 +86,9 @@ pub fn create_webview(url: String) -> Result<()> {
       "devtools" => {
         let _ = proxy.send_event(UserEvent::Devtools);
       }
+      "menu_maximize" => {
+        let _ = proxy.send_event(UserEvent::MenuMaximize);
+      }
       _ => {}
     }
   };
@@ -135,7 +138,7 @@ pub fn create_webview(url: String) -> Result<()> {
     .with_html(HTML_CONTENT)
     .with_bounds(Rect {
       position: LogicalPosition::new(0, 0).into(),
-      size: LogicalSize::new(size.width, MENU_HEIGHT +500).into(),
+      size: LogicalSize::new(size.width, MENU_HEIGHT).into(),
     });
 
   let mp_builder = WebViewBuilder::new()
@@ -150,8 +153,6 @@ pub fn create_webview(url: String) -> Result<()> {
     let mp_webview = build_webview(mp_builder).unwrap();
     let menu_webview = build_webview(menu_builder).unwrap();
 
-  let mut menu_webview = Some(menu_webview);
-
   event_loop.run(move |event, _, control_flow| {
     *control_flow = ControlFlow::Wait;
 
@@ -162,7 +163,7 @@ pub fn create_webview(url: String) -> Result<()> {
         ..
       }
       | Event::UserEvent(UserEvent::CloseWindow) => {
-        let _ = menu_webview.take();
+        // let _ = menu_webview.take();
         *control_flow = ControlFlow::Exit
       }
 
@@ -185,6 +186,24 @@ pub fn create_webview(url: String) -> Result<()> {
           } else {
             mp_webview.open_devtools();
           }
+        }
+        UserEvent::MenuMaximize => {
+          // 获取window的窗口高度
+          let window_height = window.inner_size().height;
+          let scale_factor = window.scale_factor();
+          // 获取mencu_webview的窗口高度
+          let current_height: u32 = menu_webview.bounds().unwrap().size.to_logical(scale_factor).height;
+          let height = if current_height == MENU_HEIGHT {
+            window_height
+          } else {
+            MENU_HEIGHT
+          };
+          
+          // 设置menu_webview的高度
+          menu_webview.set_bounds(Rect {
+            position: LogicalPosition::new(0, 0).into(),
+            size: LogicalSize::new(size.width, height).into(),
+          }).unwrap();
         }
       },
       _ => (),

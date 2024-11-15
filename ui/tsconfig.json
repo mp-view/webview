@@ -12,8 +12,9 @@
       "react": ["./../node_modules/preact/compat/"],
       "react-dom": ["./../node_modules/preact/compat/"],
       "react/jsx-runtime": ["./../node_modules/preact/compat/jsx-runtime"],
-      "@/*": ["./src/*"]
+      "~/*": ["./src/*"]
     },
+    "allowImportingTsExtensions": true,
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,

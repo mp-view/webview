@@ -5,4 +5,5 @@ pub enum UserEvent {
   DragWindow,
   CloseWindow,
   Devtools,
+  MenuMaximize,
 }

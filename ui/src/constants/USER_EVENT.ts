@@ -11,4 +11,6 @@ export enum USER_EVENT {
   PIN = 'pin',
   /** devtools */
   DEVTOOLS = 'devtools',
+  /** 菜单最大化 */
+  MENU_MAXIMIZE = 'menu_maximize',
 }

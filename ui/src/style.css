@@ -3,4 +3,5 @@ body,
 #app {
   background-color: transparent;
   width: 100%;
+  overflow-y: hidden;
 }

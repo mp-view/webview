@@ -1,4 +1,5 @@
 import type { PhoneInfoData } from './../constants/phoneInfo'
+import { USER_EVENT } from '~/constants/USER_EVENT'
 import { phoneInfoData } from './../constants/phoneInfo'
 import Popover from './ui/popover'
 
@@ -21,6 +22,7 @@ export function DeviceInfo({ info }: { info: PhoneInfoData }) {
       <Popover
         content={content}
         trigger="click"
+        onOpenChange={() => window.ipc.postMessage(USER_EVENT.MENU_MAXIMIZE)}
       >
         <div class="group flex cursor-pointer items-center c-#fff">
           <div>

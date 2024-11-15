@@ -42,8 +42,8 @@ export default function Popover(props: PopoverProps) {
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: (open) => {
-      setIsOpen(open)
       onOpenChange?.(open)
+      setIsOpen(open)
     },
     placement,
     middleware: [
