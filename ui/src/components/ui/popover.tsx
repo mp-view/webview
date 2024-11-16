@@ -75,6 +75,7 @@ export default function Popover(props: PopoverProps) {
       ref={refs.setFloating}
       style={floatingStyles}
       {...getFloatingProps()}
+      onClick={() => setIsOpen(false)}
     >
       {content}
     </div>

@@ -6,7 +6,10 @@ mod user_event;
 extern crate napi_derive;
 
 use tao::{
-  dpi::{PhysicalSize, Size}, event::{Event, StartCause, WindowEvent}, event_loop::{ControlFlow, EventLoopBuilder}, window::{Theme, WindowBuilder}
+  dpi::{PhysicalSize, Size}, 
+  event::{Event, StartCause, WindowEvent}, 
+  event_loop::{ControlFlow, EventLoopBuilder}, 
+  window::{Theme, WindowBuilder}
 };
 use user_event::UserEvent;
 use wry::{
@@ -38,6 +41,7 @@ pub fn create_webview(url: String) -> Result<()> {
     .with_decorations(false)
     .with_theme(Some(Theme::Dark))
     .with_always_on_top(true)
+    .with_resizable(false)
     .with_transparent(true);
 
   #[cfg(target_os = "windows")]
@@ -47,18 +51,22 @@ pub fn create_webview(url: String) -> Result<()> {
 
   let window = builder.build(&event_loop).unwrap();
 
-  #[cfg(target_os = "windows")] {
-    use window_vibrancy::apply_tabbed;
-    apply_tabbed(&window, None)
-    .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
-    window.set_undecorated_shadow(true);
-  }
 
-  #[cfg(target_os = "macos")] {
-    use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
-    apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
-    .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
-  }
+
+  // #[cfg(target_os = "windows")] {
+  //   use window_vibrancy::apply_tabbed;
+  //   apply_tabbed(&window, None)
+  //   .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+  //   window.set_undecorated_shadow(true);
+  // }
+
+  // #[cfg(target_os = "macos")] {
+  //   use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+  //   apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+  //   .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+  // }
+
+
 
   let proxy = event_loop.create_proxy();
   let handler = move |req: Request<String>| {
@@ -95,6 +103,8 @@ pub fn create_webview(url: String) -> Result<()> {
     }
   };
 
+
+
   let size = window.inner_size().to_logical::<u32>(window.scale_factor());
 
   let build_webview = |builder: WebViewBuilder<'_>| -> wry::Result<wry::WebView> {
@@ -129,9 +139,6 @@ pub fn create_webview(url: String) -> Result<()> {
 
   const MENU_HEIGHT: u32 = 65;
   const HTML_CONTENT: &str = include_str!("ui/index.html");
-  const PHONE_DATA: &str = include_str!("assets/phone.data.json");
-  
-  let phone_device: Vec<Device> = serde_json::from_str(PHONE_DATA).unwrap();
 
   let menu_builder = WebViewBuilder::new()
     .with_transparent(true)
@@ -154,6 +161,8 @@ pub fn create_webview(url: String) -> Result<()> {
 
     let mp_webview = build_webview(mp_builder).unwrap();
     let menu_webview = build_webview(menu_builder).unwrap();
+
+  
 
   event_loop.run(move |event, _, control_flow| {
     *control_flow = ControlFlow::Wait;
@@ -195,21 +204,36 @@ pub fn create_webview(url: String) -> Result<()> {
           let scale_factor = window.scale_factor();
           // 获取mencu_webview的窗口高度
           let current_height: u32 = menu_webview.bounds().unwrap().size.to_logical(scale_factor).height;
+          let current_width: u32 = menu_webview.bounds().unwrap().size.to_logical(scale_factor).width;
           let height = if current_height == MENU_HEIGHT {
             window_height
           } else {
             MENU_HEIGHT
           };
-          
+          println!("current_height: {}", current_height);
+          println!("height: {}", height);
           // 设置menu_webview的高度
           menu_webview.set_bounds(Rect {
             position: LogicalPosition::new(0, 0).into(),
-            size: LogicalSize::new(size.width, height).into(),
+            size: LogicalSize::new(current_width, height).into(),
           }).unwrap();
         }
         UserEvent::Deviceinfo(device_json) => {
           let device: Device = serde_json::from_str(&device_json).unwrap();
-          window.set_inner_size(LogicalSize::new(device.size[0], device.size[1]));
+          let size = window.inner_size();
+          println!("size: {:?}", size);
+          window.set_inner_size(LogicalSize {
+            width: device.size[0],
+            height: device.size[1] + MENU_HEIGHT,
+          });
+          menu_webview.set_bounds(Rect {
+            position: LogicalPosition::new(0, 0).into(),
+            size: LogicalSize::new(device.size[0], MENU_HEIGHT).into(), 
+          }).unwrap();
+          mp_webview.set_bounds(Rect {
+            position: LogicalPosition::new(0, MENU_HEIGHT).into(),
+            size: LogicalSize::new(device.size[0], device.size[1]).into(),
+          }).unwrap();
           println!("device_json: {:?}", device.size);
         }
       },
