@@ -11,4 +11,6 @@ export enum USER_EVENT {
   PIN = 'pin',
   /** devtools */
   DEVTOOLS = 'devtools',
+  /** 截图 */
+  SCREENSHOT = 'screenshot',
 }

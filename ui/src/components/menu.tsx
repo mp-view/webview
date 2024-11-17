@@ -9,6 +9,9 @@ export function Menu() {
       <button class="icon-btn" onClick={() => window.ipc.postMessage(USER_EVENT.DEVTOOLS)}>
         <div class="i-carbon:terminal" />
       </button>
+      <button class="icon-btn" onClick={() => window.ipc.postMessage(USER_EVENT.SCREENSHOT)}>
+        <div class="i-carbon:camera" />
+      </button>
       <button class="icon-btn">
         <div class="i-carbon:list" />
       </button>
