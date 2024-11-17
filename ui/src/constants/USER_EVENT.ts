@@ -13,4 +13,8 @@ export enum USER_EVENT {
   DEVTOOLS = 'devtools',
   /** 截图 */
   SCREENSHOT = 'screenshot',
+  /** 菜单最大化 */
+  MENU_MAXIMIZE = 'menu_maximize',
+  /** 设备信息 */
+  DEVICE_INFO = 'device_info',
 }

@@ -5,11 +5,13 @@
     /* Preact Config */
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"],
+      "react": ["./../node_modules/preact/compat/"],
+      "react-dom": ["./../node_modules/preact/compat/"],
+      "react/jsx-runtime": ["./../node_modules/preact/compat/jsx-runtime"],
       "~/*": ["./src/*"]
     },
     "allowImportingTsExtensions": true,

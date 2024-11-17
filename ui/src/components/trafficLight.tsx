@@ -15,6 +15,7 @@ export function TrafficLight() {
       >
         <div class="i-material-symbols:remove op0 transition-opacity duration-75 group-hover:op100" />
       </button>
+      <button class="title-btn bg-#474745"></button>
     </div>
   )
 }
