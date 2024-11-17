@@ -1,3 +1,7 @@
 import { createWebview } from '../index.js'
 
-createWebview('http://tauri.app')
+createWebview({
+  url: 'http://tauri.app',
+  width: 430,
+  height: 932,
+})

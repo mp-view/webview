@@ -32,9 +32,23 @@ struct Device {
     user_agent: String,
 }
 
+#[napi(object)]
+pub struct WebviewOptions {
+  pub url: String,
+  pub width: u32,
+  pub height: u32,
+}
+
 #[napi]
-pub fn create_webview(url: String) -> Result<()> {
-  let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
+pub fn create_webview(options: WebviewOptions) -> Result<()> {
+ 
+  const MENU_HEIGHT: u32 = 65;
+  const HTML_CONTENT: &str = include_str!("ui/index.html");
+  let default_width = options.width;
+  let default_height = options.height;
+ 
+ 
+ let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
 
   #[allow(unused_mut)]
   let mut builder = WindowBuilder::new()
@@ -42,6 +56,11 @@ pub fn create_webview(url: String) -> Result<()> {
     .with_theme(Some(Theme::Dark))
     .with_always_on_top(true)
     .with_resizable(false)
+    .with_inner_size(LogicalSize {
+      width: options.width,
+      height: options.height + MENU_HEIGHT,
+    })
+    .with_title("mp-view")
     .with_transparent(true);
 
   #[cfg(target_os = "windows")]
@@ -103,10 +122,6 @@ pub fn create_webview(url: String) -> Result<()> {
     }
   };
 
-
-
-  let size = window.inner_size().to_logical::<u32>(window.scale_factor());
-
   let build_webview = |builder: WebViewBuilder<'_>| -> wry::Result<wry::WebView> {
     #[cfg(any(
       target_os = "windows",
@@ -126,7 +141,6 @@ pub fn create_webview(url: String) -> Result<()> {
       use gtk::prelude::*;
       use tao::platform::unix::WindowExtUnix;
       use wry::WebViewBuilderExtUnix;
-
       let fixed = gtk::Fixed::new();
       let vbox = window.default_vbox().unwrap();
       vbox.pack_start(&fixed, true, true, 0);
@@ -137,8 +151,6 @@ pub fn create_webview(url: String) -> Result<()> {
     Ok(webview)
   };
 
-  const MENU_HEIGHT: u32 = 65;
-  const HTML_CONTENT: &str = include_str!("ui/index.html");
 
   let menu_builder = WebViewBuilder::new()
     .with_transparent(true)
@@ -147,16 +159,16 @@ pub fn create_webview(url: String) -> Result<()> {
     .with_html(HTML_CONTENT)
     .with_bounds(Rect {
       position: LogicalPosition::new(0, 0).into(),
-      size: LogicalSize::new(size.width, MENU_HEIGHT).into(),
+      size: LogicalSize::new(default_width, MENU_HEIGHT).into(),
     });
 
   let mp_builder = WebViewBuilder::new()
     .with_transparent(true)
     .with_accept_first_mouse(true)
-    .with_url(url)
+    .with_url(options.url)
     .with_bounds(Rect {
       position: LogicalPosition::new(0, MENU_HEIGHT).into(),
-      size: LogicalSize::new(size.width, 500).into(),
+      size: LogicalSize::new(default_width, default_height).into(),
     });
 
     let mp_webview = build_webview(mp_builder).unwrap();
