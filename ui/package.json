@@ -3,6 +3,7 @@
   "type": "module",
   "packageManager": "yarn@4.5.1",
   "scripts": {
+    "serve": "vite",
     "dev": "vite build --watch",
     "build": "vite build",
     "play": "node ./../playground/index.mjs"
